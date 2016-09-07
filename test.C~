@@ -1,0 +1,93 @@
+{
+ 
+
+  #include "TFile.h"
+#include "TTree.h"
+#include "TNtuple.h"
+#include <cfloat>
+#include <string>
+#include "TROOT.h"
+#include "TChain.h"
+#include "TLatex"
+#include "TMath.h"
+#include <vector>
+
+
+  //gStyle->SetOptstat(111111);
+  //How to run:
+  //root -l protoDune_pion_200MeV_mono_JMorris_0_anatree.root ../script/test.C
+  //The above command needs to be run from the anatree directory.  You can load file and the script from    anywhere but you need to specify the path to them when passing them to root
+
+  
+//START X
+   //Define Filename
+   const char *fileName = "Hist_Truth_Startx_0";	 
+   const char *fileLocEps = "/home/lar/jmorris/anatree/GraphsPdf/";
+   //const char *fileLocPng = "/home/lar/jmorris/anatree/GraphsPng/";
+   const char *fileExt = ".pdf";
+
+   
+
+   std::string pdf_name = std::string(fileLocEps) + std::string(fileName) + std::string(fileExt);
+   //std::string png_name = std::string(fileLocPng) + std::string(fileName) + std::string(fileExt);
+
+  //move into the analysistree directory
+  _file0->cd("analysistree");
+
+  //Making a 1D histogram with float precision
+  //The constructor is (string ROOT_histo_name, string title of histogram, int number of bins, double min value of x, double max value of x)
+  
+  TH1F *hist = new TH1F("my_hist",fileName,100,-50,250);
+  //cd into the files "analysistree" directory
+  //Draw variable P*P in the anatree tree and dump the contents into the histogram we called "my_hist"
+  //You can look up what the variable names are by opening and TBrowser and looking at the tree.  The names need to be exactly the same as the ones you see in the TBrowser
+  anatree->Draw("(StartPointx) >> my_hist");
+  
+
+  //Finally, draw the histogram
+
+  hist->Draw();
+  
+  hist->GetXaxis()->SetTitle("Starting X Position");
+  hist->GetYaxis()->SetTitle("Events");
+  //Save file	
+  //hist->SaveAs(png_name.c_str());
+  hist->SaveAs(pdf_name.c_str());
+
+  //START Y
+  //Define Filename
+   const char *fileName = "Hist_Truth_Starty_0";	 
+   const char *fileLocEps = "/home/lar/jmorris/anatree/GraphsPdf/";
+   //const char *fileLocPng = "/home/lar/jmorris/anatree/GraphsPng/";
+   const char *fileExt = ".pdf";
+
+   
+
+   std::string pdf_name = std::string(fileLocEps) + std::string(fileName) + std::string(fileExt);
+   //std::string png_name = std::string(fileLocPng) + std::string(fileName) + std::string(fileExt);
+
+  //move into the analysistree directory
+  _file0->cd("analysistree");
+
+  //Making a 1D histogram with float precision
+  //The constructor is (string ROOT_histo_name, string title of histogram, int number of bins, double min value of x, double max value of x)
+  
+  TH1F *hist = new TH1F("my_hist",fileName,100,-50,250);
+  //cd into the files "analysistree" directory
+  //Draw variable P*P in the anatree tree and dump the contents into the histogram we called "my_hist"
+  //You can look up what the variable names are by opening and TBrowser and looking at the tree.  The names need to be exactly the same as the ones you see in the TBrowser
+  anatree->Draw("(StartPointy) >> my_hist");
+  
+
+  //Finally, draw the histogram
+
+  hist->Draw();
+  
+  hist->GetXaxis()->SetTitle("Starting Y Position");
+  hist->GetYaxis()->SetTitle("Events");
+  //Save file	
+  //hist->SaveAs(png_name.c_str());
+  hist->SaveAs(pdf_name.c_str());
+
+
+}
