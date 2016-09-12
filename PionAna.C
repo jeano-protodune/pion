@@ -26,16 +26,23 @@ PionAna::pionCat PionAna::pionProcess(/*int pionID,*/ std::vector<int> daughterI
   for(int i=0; i<geant_list_size; i++){
     for(std::size_t j=0; j<daughterIden.size();j++){//std::size as comparison between size of vector
       if(TrackId[i]==daughterIden[j]){
-
         if(processname->at(i)=="hadElastic"&&atomNumber(pdg[i])>0){//Selection for elastic process
           processes.push_back(elast);//append process to vector
           time.push_back(StartT[i]);//append time to vector
         }
-        else if(pdg[i]==111){//Selection for charge exchange - daughter of pion is a delta 0/+ then a pion0       
-            processes.push_back(exchange);
-            time.push_back(StartT[i]); 
-                       
+         
+        if((pdg[i]==211 && NumberDaughters[i]<=2)||(pdg[i]==-211 && NumberDaughters[i]<=2)){
+          processes.push_back(inelast);//append process to vector
+          time.push_back(StartT[i]);//append time to vector
         }
+        
+        else if(pdg[i]==111 && NumberDaughters[i]<=2){//Selection for charge exchange - daughter of pion is a delta 0/+(undetected) then a pion0 with either a neutron(undetected) or a proton       
+          processes.push_back(exchange);
+          time.push_back(StartT[i]); 
+        }
+        
+        
+        
         else if(pdg[i]==-13||pdg[i]==13){//Selection for Pion decay at rest - pion+ >muon + > e+ opposite for pion-
           //Find daughter of the daughter particle 
           std::vector<int> daught_2 = daughterID(TrackId[i]);
@@ -44,15 +51,14 @@ PionAna::pionCat PionAna::pionProcess(/*int pionID,*/ std::vector<int> daughterI
               if(TrackId[l]==daught_2[k]){
                 if(pdg[l]==-11||pdg[l]==11){
                   processes.push_back(rest_decay);
-                  time.push_back(StartT[k]);
-                
+                  time.push_back(StartT[k]); 
                 }     
-              }
+              }    
             } 
           }
         }
-       
-       
+
+
 
       }  
     }  
@@ -108,20 +114,34 @@ std::vector<int> PionAna::daughterID(int trackID){
   return daughters;
 } 
 
-/*std::vector<int> PionAna::daughterPDG(int trackID){
+std::vector<int> PionAna::daughterPDG(int trackID){
   
   std::vector<int> daughters;   
   for(int i=0; i<geant_list_size; i++){
     if(Mother[i]==trackID){
-     // for(int j=0; j<geant_list_size;j++){
-       // if(TrackId[j]==TrackId[i]){
-          daughters.push_back(pdg[i]);
-       // }  
-     // }  
+      for(int j=0; j<geant_list_size;j++){
+        if(TrackId[j]==TrackId[i]){
+          daughters.push_back(pdg[j]);
+        }  
+      }  
     }       
   }
   return daughters;
-} */
+} 
+//Function to return path length of particles
+/*std::vector<float_t> PionAna::pathLength(int trackID){
+  std::vector<float_t> x;
+  std::vector<float_t> y;
+  std::vector<float_t> z;
+  
+  for(int i=0; i<geant_list_size;i++){
+    if(TrackId[i]==trackID){
+       x.push_back{StartPointx[i]};
+       y.push_back{StartPointy[i]};
+       z.push_back{StartPointz[i]};
+    }
+  } 
+}*/
 
 void PionAna::Loop()
 {
@@ -142,7 +162,8 @@ void PionAna::Loop()
 //    ientry for TTree::GetEntry and TBranch::GetEntry
 //
 //       To read only selected branches, Insert statements like:
-// METHOD1:
+//:wq
+//METHOD1:
 //    fChain->SetBranchStatus("*",0);  // disable all branches
 //    fChain->SetBranchStatus("branchname",1);  // activate branchname
 // METHOD2: replace line
@@ -165,7 +186,7 @@ void PionAna::Loop()
    leg->AddEntry(my_hist,"-1 = Undefined","");
    //leg->AddEntry(my_hist,"0 = Cross","");
    leg->AddEntry(my_hist,"1 = Elast","");
-   //leg->AddEntry(my_hist,"2 = Inelast","");
+   leg->AddEntry(my_hist,"2 = Inelast","");
    //leg->AddEntry(my_hist,"3 = Absorp","");
    leg->AddEntry(my_hist,"4 = Exchange","");
    //leg->AddEntry(my_hist,"5 = Product","");
@@ -214,16 +235,7 @@ void PionAna::Loop()
        }
       
      }
-     
-     std::vector<int> daught(NumberDaughters[23]);
-     daught = daughterID(TrackId[23]);
-     std::cout<<"lol"<<std::endl;
-     for(int i=0;i< daught.size();i++ ){
-       std::cout<< daught[i]<<std::endl; 
-     }
-
-      
-   
+       
     // Loop over particles
     for (int i = 0; i < geant_list_size; i++){
        //my_hist->Fill(pdg[i]);//Fill histogram with all particles 

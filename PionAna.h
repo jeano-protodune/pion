@@ -526,12 +526,13 @@ public :
     
    std::vector<int> daughterID(int trackID);//Declare function that returns daughter IDs
 
-  /* std::vector<int> daughterPDG(int trackID);//Declare function that returns daughter PDGs*/
+   std::vector<int> daughterPDG(int trackID);//Declare function that returns daughter PDGs
    
    int atomNumber(int pdg);
 
    int indexMin(double array[], int size);
-
+ 
+  // std::vector<float_t> pathLength(int trackID);
 
 };
 #endif
